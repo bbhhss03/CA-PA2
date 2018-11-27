@@ -9,7 +9,7 @@ double LFU(unsigned int* dataset,int dataNum,int slotNum){
     int min_freq;
     int max_fifo;
     int max_fifo_count;
-    
+
     cout<<"Input the size of each slots : ";
     cin>>slot_size;
     
