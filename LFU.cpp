@@ -1,18 +1,17 @@
 #include <iostream>
-#include <stdlib.h>
+#include <time.h>
 
 using namespace std;
 
 double LFU(unsigned int* dataset,int dataNum,int slotNum){
-    int slot_size = 0;
+    long timedif;
+    struct timespec tstart, tend;
+    
     double hit_ratio = 0;
     int min_freq;
     int max_fifo;
     int max_fifo_count;
 
-    cout<<"Input the size of each slots : ";
-    cin>>slot_size;
-    
     int* slot = new int[slotNum]; //슬롯들의 갯수
     int* freq = new int[slotNum]; //빈도수 세어주는 배열
     int* fifo = new int[slotNum]; //빈도수로 구별 실패 시 FIFO결과 수행
@@ -22,6 +21,9 @@ double LFU(unsigned int* dataset,int dataNum,int slotNum){
         freq[i] = 0;
         fifo[i] = 0;
     }
+    if(clock_gettime(CLOCK_REALTIME,&tstart) == -1)
+        perror("Failed to get starting time\n");
+    
     for(int i = 0; i<dataNum; i++){
        
         min_freq = 0;
@@ -58,7 +60,12 @@ double LFU(unsigned int* dataset,int dataNum,int slotNum){
         for(int n = 0; n<slotNum; n++)
             fifo[n]++;
     }
-
+    if(clock_gettime(CLOCK_REALTIME,&tend)==-1)
+        perror("Failed to get ending time\n");
+    
+    timedif = 1000000000*(tend.tv_sec - tstart.tv_sec) + (tend.tv_nsec - tstart.tv_nsec);
+    printf("Elapsed time : %ld nanoseconds\n",timedif);
+    
     delete [] slot;
     delete [] freq,
     delete [] fifo;
@@ -68,8 +75,8 @@ double LFU(unsigned int* dataset,int dataNum,int slotNum){
 
 int main(){
     
-    unsigned int dataset[22] = {1,2,2,2,1,2,3,1,2,3,2,2,1,2,3,1,2,3,3,1,2,3};
-    int slotNum = 3;
+    unsigned int dataset[22] = {1,7,2,2,8,2,3,1,3,4,2,2,9,2,3,1,2,3,3,1,2,3};
+    int slotNum = 12;
     int dataNum = 22;
     printf("Hit Ratio : %0.2f%%\n",LFU(dataset,dataNum,slotNum));
     return 0;
