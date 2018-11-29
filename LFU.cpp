@@ -12,7 +12,7 @@ double LFU(unsigned int* dataset,int dataNum,int slotNum){
     int max_fifo;
     int max_fifo_count;
 
-    int* slot = new int[slotNum]; //슬롯들의 갯수
+    int* slot = new int[slotNum]; //슬롯들의 갯수 
     int* freq = new int[slotNum]; //빈도수 세어주는 배열
     int* fifo = new int[slotNum]; //빈도수로 구별 실패 시 FIFO결과 수행
     
