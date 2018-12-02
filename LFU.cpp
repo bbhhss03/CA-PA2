@@ -3,6 +3,7 @@
 
 using namespace std;
 
+
 double LFU(unsigned int* dataset,int dataNum,int slotNum){
     long timedif;
     struct timespec tstart, tend;
@@ -13,7 +14,7 @@ double LFU(unsigned int* dataset,int dataNum,int slotNum){
     int max_fifo_count;
 
     int* slot = new int[slotNum]; //슬롯들의 갯수 
-    int* freq = new int[slotNum]; //빈도수 세어주는 배열
+    int* freq = new int[slotNum]; //빈도수 세어주는 배열  
     int* fifo = new int[slotNum]; //빈도수로 구별 실패 시 FIFO결과 수행
     
     for(int i = 0; i<slotNum; i++){ //배열 원소 0으로 초기화 (입력값이 양의 정수이므로 0으로 초기화해도 무방)
