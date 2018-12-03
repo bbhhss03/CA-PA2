@@ -1,6 +1,6 @@
 #include<stdlib.h>
 #include<iostream>
-#include<ctime>
+#include<time.h>
 
 using namespace std;
 double fifo(unsigned int* dataset, int dataNum, int slotNum);
@@ -112,6 +112,7 @@ double fifo(unsigned int* dataset, int dataNum, int slotNum)
 	cache = (int*)malloc(slotNum * sizeof(int));
 	for (int i = 0; i < slotNum; i++)
 		cache[i] = -1;
+	
 	for (int i = 0; i < dataNum; i++)
 	{
 		int j = 0;
@@ -131,7 +132,7 @@ double fifo(unsigned int* dataset, int dataNum, int slotNum)
 
 			if (rep_index < slotNum)
 				rep_index++;
-			else if (rep_index == slotNum)
+			if (rep_index == slotNum)
 				rep_index = 0;
 		}
 	}
@@ -215,7 +216,7 @@ double LRU(unsigned int* dataset, int dataNum, int slotNum)
 		//cout << endl;
 	}
 	//cout << endl;
-	hit_ratio = (double)hit / (double)dataNum;
+	hit_ratio = (double)hit / (double)dataNum * 100;
 	return hit_ratio;
 }
 
