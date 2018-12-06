@@ -5,6 +5,7 @@
 using namespace std;
 double fifo(unsigned int* dataset, int dataNum, int slotNum);
 double LRU(unsigned int* dataset, int dataNum, int slotNum);
+double LFU(unsigned int* dateset, int dataNum, int slotNum);
 unsigned int* user_input(unsigned int* dataset, int* p_dataNum, int* p_slotNum);
 //void data_input(unsigned int *dataset,int dataNum,int slotNum);
 double random(unsigned int* dataset, int dataNum, int slotNum);
@@ -31,6 +32,11 @@ int main(void) {
 	hit_ratio = random(dataset, dataNum, slotNum);
 	end = clock();
 	cout << "RANDOM : " << "hit ratio is " << hit_ratio << "%, " << "running time is " << end - start << "ms" << endl;
+    
+    start = clock();
+    hit_ratio = LFU(dataset, dataNum, slotNum);
+    end = clock();
+    cout << "LFU : " << "hit ratio is " << hit_ratio << "%, " << "running time is " << end - start << "ms" << endl;
 
 	free(dataset);
 
