@@ -154,8 +154,8 @@ double LRU(unsigned int* dataset, int dataNum, int slotNum)
     double hit_ratio; //적중률
     int *count; //참조 안한 횟수 count 횟수
     int already = 0; //이미 교체 또는 입력을 했는지 확인
-    count = (int*)malloc(sizeof(slotNum)); //동적할당
-    set = (int*)malloc(sizeof(slotNum));
+    count = (int*)malloc(sizeof(int)*slotNum); //동적할당
+    set = (int*)malloc(sizeof(int)*slotNum);
     for (int i = 0; i < slotNum; i++)
     {
         set[i] = -1; //세트를 -1, count 0으로 초기화
@@ -233,25 +233,35 @@ double LRU(unsigned int* dataset, int dataNum, int slotNum)
 
 double random(unsigned int* dataset, int dataNum, int slotNum) {
     int hit = 0; // 적중횟수
+    int check = -1;
     int *set = (int*)malloc(sizeof(int)*slotNum); //슬롯  생성
     for (int i = 0; i < slotNum; i++) {
         set[i] = -1;
     }
     srand((int)time(NULL));
     for (int i = 0; i < dataNum; i++) {
+        check = -1;
         for (int j = 0; j < slotNum; j++) {
+            
             if (dataset[i] == set[j]) {
                 hit++;
                 set[j] = dataset[i];
                 break;
             }
+            else if (set[j] == -1) {
+                check = j;
+            }
             if (j == slotNum - 1) {
+                if (check == -1) {
+                    set[check] = dataset[i];
+                    break;
+                }
                 int change = rand() % slotNum;
                 set[change] = dataset[i];
             }
         }
     }
-    double ratio = (double)hit/(double)dataNum*100;
+    double ratio = (double)hit / (double)dataNum * 100;
     
     free(set);
     return ratio;
