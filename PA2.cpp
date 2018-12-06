@@ -1,21 +1,44 @@
 #include<stdlib.h>
 #include<iostream>
 #include<time.h>
+
 using namespace std;
 double fifo(unsigned int* dataset, int dataNum, int slotNum);
 double LRU(unsigned int* dataset, int dataNum, int slotNum);
-void user_input(void);
-void data_input(unsigned int *dataset,int dataNum,int slotNum);
+unsigned int* user_input(unsigned int* dataset, int* p_dataNum, int* p_slotNum);
+//void data_input(unsigned int *dataset,int dataNum,int slotNum);
 double random(unsigned int* dataset, int dataNum, int slotNum);
 int main(void) {
 
-	user_input();
+	unsigned int *dataset = NULL;
+	int dataNum = 0;
+	int slotNum = 0;
+	double hit_ratio = 0;
+
+	dataset = user_input(dataset, &dataNum, &slotNum);
+
+	clock_t start = clock();
+	hit_ratio = fifo(dataset, dataNum, slotNum);
+	clock_t end = clock();
+	cout << endl << "FIFO : " << "hit ratio is " << hit_ratio << "%, " << "running time is "<< end - start << "ms" << endl;
+
+	start = clock();
+	hit_ratio = LRU(dataset, dataNum, slotNum);
+	end = clock();
+	cout << "LRU : " << "hit ratio is " << hit_ratio << "%, " << "running time is " << end - start << "ms" << endl;
+
+	start = clock();
+	hit_ratio = random(dataset, dataNum, slotNum);
+	end = clock();
+	cout << "RANDOM : " << "hit ratio is " << hit_ratio << "%, " << "running time is " << end - start << "ms" << endl;
+
+	free(dataset);
+
 	return 0;
 }
-void user_input(void) {
+unsigned int* user_input(unsigned int* dataset, int* p_dataNum, int* p_slotNum) {
 	int slotNum = 0;
 	int dataNum = 0;
-	unsigned int *dataset;
 	while (1) {
 		cout << "총 몇개의 슬롯으로 캐쉬를 구성하겠습니까? (한 블럭의 크기는 32bit 입니다.) : ";
 		cin >> slotNum;
@@ -27,6 +50,9 @@ void user_input(void) {
 		}
 		break;
 	}
+
+	*p_slotNum = slotNum;
+
 	while (1) {
 		cout << "총 몇개의 데이터로 데이터 셋을 구성하겠습니까?  : ";
 		cin >> dataNum;
@@ -38,14 +64,11 @@ void user_input(void) {
 		}
 		break;
 	}
-	dataset = (unsigned int*)malloc(sizeof(unsigned int)*dataNum);
-	data_input(dataset, dataNum,slotNum);
-	cout << endl << "FIFO :" << fifo(dataset, dataNum, slotNum) << endl;
-	cout << "LRU :"<<LRU(dataset, dataNum, slotNum);
-	cout << "RANDOM :"<<random(dataset, dataNum, slotNum)<<endl;
 
-}
-void data_input(unsigned int *dataset,int dataNum,int slotNum) {
+	*p_dataNum = dataNum;
+
+	dataset = (unsigned int*)malloc(sizeof(unsigned int)*dataNum);
+
 	for (int i = 0; i < dataNum; i++) {
 		dataset[i] = 0;
 		while (1) {
@@ -60,7 +83,25 @@ void data_input(unsigned int *dataset,int dataNum,int slotNum) {
 			break;
 		}
 	}
+	return dataset;
 }
+//void data_input(unsigned int *dataset,int dataNum,int slotNum) {
+//	for (int i = 0; i < dataNum; i++) {
+//		dataset[i] = 0;
+//		while (1) {
+//			cout << "[" << i << "]번째 데이터의 값 :";
+//			cin >> dataset[i];
+//			if (cin.fail()) {
+//				cout << endl << "데이터의 값은 양수이며 정수이고, 2의 32승 미만이어야 합니다.(한 블럭의 크기는 32bit 입니다.)" << endl;
+//				cin.clear();
+//				cin.ignore(256, '\n');
+//				continue;
+//			}
+//			break;
+//		}
+//	}
+//}
+
 double fifo(unsigned int* dataset, int dataNum, int slotNum)
 {
 	//hit ratio = cache access / total access
@@ -71,6 +112,7 @@ double fifo(unsigned int* dataset, int dataNum, int slotNum)
 	cache = (int*)malloc(slotNum * sizeof(int));
 	for (int i = 0; i < slotNum; i++)
 		cache[i] = -1;
+	
 	for (int i = 0; i < dataNum; i++)
 	{
 		int j = 0;
@@ -78,7 +120,7 @@ double fifo(unsigned int* dataset, int dataNum, int slotNum)
 		{
 			if (cache[j] == dataset[i])
 			{
-				cout << "hit cache ... " << dataset[i] << endl;
+				//cout << "hit cache ... " << dataset[i] << endl;
 				cache_access++;
 				break;
 			}
@@ -90,13 +132,14 @@ double fifo(unsigned int* dataset, int dataNum, int slotNum)
 
 			if (rep_index < slotNum)
 				rep_index++;
-			else if (rep_index == slotNum)
+			if (rep_index == slotNum)
 				rep_index = 0;
 		}
 	}
 	hit_ratio = ((double)cache_access / (double)dataNum) * 100.0;
 	return hit_ratio;
 }
+
 double LRU(unsigned int* dataset, int dataNum, int slotNum)
 {
 	int *set;//세트안에 슬롯들 저장할 배열
@@ -172,10 +215,11 @@ double LRU(unsigned int* dataset, int dataNum, int slotNum)
 		//	cout << set[i];
 		//cout << endl;
 	}
-	cout << endl;
-	hit_ratio = (double)hit / (double)dataNum;
+	//cout << endl;
+	hit_ratio = (double)hit / (double)dataNum * 100;
 	return hit_ratio;
 }
+
 double random(unsigned int* dataset, int dataNum, int slotNum) {
 	int hit = 0; // 적중횟수
 	int miss = 0; // 미스횟수
